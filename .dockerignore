@@ -1,0 +1,7 @@
+Dockerfile
+.dockerignore
+README.md
+.gitignore
+tests
+nlsqli.egg-info
+venv
