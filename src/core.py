@@ -5,7 +5,7 @@ import requests
 from rich.progress import track
 
 from constants import PAYLOADS_PATH
-from utils import retrieve_payloads, console, parse_headers
+from utils import retrieve_payloads, console
 
 
 def analyze_output(req):
@@ -40,7 +40,7 @@ def main(args):
     url, query_string = args.get("url")
     method = args.get('method')
     timeout = args.get('timeout')
-    headers = parse_headers(args.get('header'))
+    headers = args.get('header')
     data = args.get('data')
     cookies = args.get('cookies')
     auth = args.get('auth')
@@ -50,7 +50,8 @@ def main(args):
                       f" arguments and form data is set to: {data}\nExiting...")
         sys.exit(1)
 
-    console.print(f"Received URL: {args.get('url')}")
+
+    console.print(f"Received: {args.get('url')}")
     console.print(f"Found [bold red]{len(query_string)}[/bold red] query string arguments.")
     console.print(f"Request [u cyan]Timeout[/u cyan] set to: {timeout}")
     console.print(f"Request [u cyan]Headers[/u cyan] set to: {headers}")

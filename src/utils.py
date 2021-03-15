@@ -1,3 +1,6 @@
+"""
+Module for utilities, such as types, parser helpers etc.
+"""
 from urllib.parse import urlparse, parse_qs
 from collections.abc import Iterator
 
@@ -46,10 +49,15 @@ class URLParserType:
         return iter([self.url, self.qs])
 
     def __str__(self) -> str:
-        return f"URLParser with URL: {self.url} and query string: {self.qs}"
+        return f"{self.url} and query string: {self.qs}"
 
     def __repr__(self) -> str:
         return f"URLParser: <URL -> {self.url} , Query -> {self.qs}>"
+
+
+def parse_data(data: str) -> dict:
+    """Convert data argument to dictionary."""
+    pass
 
 
 def retrieve_payloads(payload_path):
@@ -57,17 +65,3 @@ def retrieve_payloads(payload_path):
     with open(payload_path, mode="r", encoding="utf-8") as fp:
         return fp.readlines()
 
-
-def parse_headers(headers) -> dict:
-    """Convert headers argument to dictionary."""
-
-    _headers = dict()
-
-    if headers:
-        for header in headers:
-            # Header should be string as "X-API-Key:3"
-            # NOTE: Not going to test input, assume it for now.
-            key, val = header.pop().replace(' ', '').split(':')
-            _headers[key] = val
-
-    return _headers
