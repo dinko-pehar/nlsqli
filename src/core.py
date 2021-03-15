@@ -1,10 +1,11 @@
 import copy
+import sys
 
 import requests
 from rich.progress import track
 
 from constants import PAYLOADS_PATH
-from utils import URLParser, retrieve_payloads, console, parse_headers
+from utils import retrieve_payloads, console, parse_headers
 
 
 def analyze_output(req):
@@ -14,7 +15,7 @@ def analyze_output(req):
 
 
 def send(session, query_string, payload, *,
-         method='', url='', timeout=0, headers=None, data=None):
+         method='', url='', timeout=0, data=None):
     # Copy by value (don't modify original query string).
     params = copy.deepcopy(query_string)
 
@@ -28,18 +29,15 @@ def send(session, query_string, payload, *,
                               data={})
 
         if analyze_output(req):
-            console.log(f"Parameter []{key}[] seems to be SQLi vulnerable.")
+            console.log(f"Parameter {key} seems to be SQLi vulnerable.")
 
         params[key] = val  # Retain original value.
 
 
 def main(args):
     console.rule("Running...", characters="=")
-    """
 
-    """
-
-    url, query_string = URLParser(args.get("url"))
+    url, query_string = args.get("url")
     method = args.get('method')
     timeout = args.get('timeout')
     headers = parse_headers(args.get('header'))
@@ -47,13 +45,18 @@ def main(args):
     cookies = args.get('cookies')
     auth = args.get('auth')
 
+    if data is None and len(query_string) == 0:
+        console.print(f"Found [bold red]{len(query_string)}[/bold red] query string"
+                      f" arguments and form data is set to: {data}\nExiting...")
+        sys.exit(1)
+
     console.print(f"Received URL: {args.get('url')}")
-    console.print(f"Received URL: {url}")
     console.print(f"Found [bold red]{len(query_string)}[/bold red] query string arguments.")
     console.print(f"Request [u cyan]Timeout[/u cyan] set to: {timeout}")
     console.print(f"Request [u cyan]Headers[/u cyan] set to: {headers}")
-    console.print(f"Request [u cyan]Method[/u cyan] set to: {headers}")
+    console.print(f"Request [u cyan]Method[/u cyan] set to: {method}")
     console.print(f"Request [u cyan]Cookies[/u cyan] set to: {cookies}")
+    console.print(f"Request [u cyan]Auth[/u cyan] set to Basic: {auth}")
 
     with requests.Session() as session:
 
@@ -63,6 +66,9 @@ def main(args):
         if auth:  # Should be basic auth e.g. username:password.
             session.auth = tuple(auth.split(':'))
 
+        if headers:
+            session.headers.update(headers)
+
         console.rule("Injecting ...")
 
         for payload_path in PAYLOADS_PATH.rglob('*.txt'):
@@ -70,4 +76,4 @@ def main(args):
 
             for payload in track(payloads, description=f"Injecting from {payload_path} payloads..."):
                 send(session, query_string, payload,
-                     method=method, url=url, timeout=timeout, headers=None, data=None)
+                     method=method, url=url, timeout=timeout)

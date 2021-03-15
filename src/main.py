@@ -13,5 +13,6 @@ if __name__ == '__main__':
     try:
         main(args)
     except KeyboardInterrupt:
+        # Suppress CTRL + C traceback
         sys.exit(1)
 
