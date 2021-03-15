@@ -4,7 +4,7 @@ import requests
 from rich.progress import track
 
 from constants import PAYLOADS_PATH
-from utils import URLParser, retrieve_payloads, console
+from utils import URLParser, retrieve_payloads, console, parse_headers
 
 
 def analyze_output(req):
@@ -13,8 +13,8 @@ def analyze_output(req):
         return True
 
 
-
-def send(session, query_string, payload, *, method='', url='', timeout=0):
+def send(session, query_string, payload, *,
+         method='', url='', timeout=0, headers=None, data=None):
     # Copy by value (don't modify original query string).
     params = copy.deepcopy(query_string)
 
@@ -24,7 +24,8 @@ def send(session, query_string, payload, *, method='', url='', timeout=0):
         req = session.request(method=method,
                               url=url,
                               timeout=timeout,
-                              params=params)
+                              params=params,
+                              data={})
 
         if analyze_output(req):
             console.log(f"Parameter []{key}[] seems to be SQLi vulnerable.")
@@ -38,12 +39,13 @@ def main(args):
 
     """
 
-    cookies = args.get('cookies')
+    url, query_string = URLParser(args.get("url"))
     method = args.get('method')
     timeout = args.get('timeout')
-    headers = args.get('headers')
+    headers = parse_headers(args.get('header'))
+    data = args.get('data')
+    cookies = args.get('cookies')
     auth = args.get('auth')
-    url, query_string = URLParser(args.get("url"))
 
     console.print(f"Received URL: {args.get('url')}")
     console.print(f"Received URL: {url}")
@@ -58,8 +60,7 @@ def main(args):
         if cookies:  # Update cookies if provided.
             session.cookies.update(cookies)
 
-        if auth:
-            # Should be basic auth e.g. username:password.
+        if auth:  # Should be basic auth e.g. username:password.
             session.auth = tuple(auth.split(':'))
 
         console.rule("Injecting ...")
@@ -68,4 +69,5 @@ def main(args):
             payloads = retrieve_payloads(payload_path)
 
             for payload in track(payloads, description=f"Injecting from {payload_path} payloads..."):
-                send(session, query_string, payload, method=method, url=url, timeout=timeout)
+                send(session, query_string, payload,
+                     method=method, url=url, timeout=timeout, headers=None, data=None)
