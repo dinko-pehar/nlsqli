@@ -18,6 +18,6 @@ setup(
             'nlsqli = nlsqli.__main__:main',
         ],
     },
-    python_requires='>=3.7',
+    python_requires='>=3.9',
     install_requires=install_requires
 )

@@ -30,6 +30,7 @@ def analyze_output(req, query_id):
 
     return False
 
+
 def send(session: requests.Session, query_string: dict, payload: str, *,
          method: str = '', url: str = '', timeout: int = 0):
     """Send prepared request with malicious payload."""
@@ -46,8 +47,8 @@ def send(session: requests.Session, query_string: dict, payload: str, *,
                               params=params,
                               data={})
 
-        if analyze_output(req, key):
-            console.print(f" ---> Payload: {payload}")
+        console.print(f' [bold green](INFO)[/bold green] Injecting: {payload.rstrip()} into {key}')
+        analyze_output(req, key)
         params[key] = val  # Retain original value.
 
 
