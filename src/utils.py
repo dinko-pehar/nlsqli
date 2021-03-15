@@ -1,6 +1,7 @@
 """
 Module for utilities, such as types, parser helpers etc.
 """
+from typing import AnyStr
 from urllib.parse import urlparse, parse_qs
 from collections.abc import Iterator
 
@@ -60,7 +61,12 @@ def parse_data(data: str) -> dict:
     pass
 
 
-def retrieve_payloads(payload_path):
+def retrieve_payloads(payload_path: str) -> list[AnyStr]:
+    """Retrieve payloads from a file.
+
+    Args:
+        payload_path: Path to file containing malicious payloads.
+    """
 
     with open(payload_path, mode="r", encoding="utf-8") as fp:
         return fp.readlines()
