@@ -8,7 +8,7 @@ Example usage:
 ...
 """
 
-PAYLOADS_PATH = Path('../data/payloads')
+PAYLOADS_PATH = Path('/tmp/data/payloads')
 
 # Standard error codes defined by databases.
 # This could be expanded, but time is money...
