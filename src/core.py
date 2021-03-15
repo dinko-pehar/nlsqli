@@ -42,6 +42,7 @@ def main(args):
     method = args.get('method')
     timeout = args.get('timeout')
     headers = args.get('headers')
+    auth = args.get('auth')
     url, query_string = URLParser(args.get("url"))
 
     console.print(f"Received URL: {args.get('url')}")
@@ -56,6 +57,10 @@ def main(args):
 
         if cookies:  # Update cookies if provided.
             session.cookies.update(cookies)
+
+        if auth:
+            # Should be basic auth e.g. username:password.
+            session.auth = tuple(auth.split(':'))
 
         console.rule("Injecting ...")
 
