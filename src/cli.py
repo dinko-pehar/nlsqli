@@ -14,7 +14,6 @@ required_args.add_argument('-u','--url',
                            help='Target URL (e.g. "http://www.site.com/vuln.php?id=1")'
                            )
 
-
 # Optional groups.
 
 # Request group.
@@ -33,18 +32,9 @@ request_args.add_argument('--cookies',
 request_args.add_argument('--timeout',
                           type=str, default=30,
                           help='Seconds to wait before timeout connection (default 30)')
-# TODO: Include this.
-request_args.add_argument('-f', '--form',
-                          action="store_true", default=False,
-                          help='Submit a form with data')
 request_args.add_argument('-a', '--auth',
                           type=str,
                           help='Pass a username:password pair for Basic Auth.')
-# TODO: Include this.
 request_args.add_argument('--data',
                           type=str,
-                          help='POST data (e.g. "query=test")')
-# Style group.
-# TODO
-request_args = parser.add_argument_group(title="Style",
-                                         description="Style output ...")
+                          help='Form data (e.g. "id=4&Submit=Submit")')
