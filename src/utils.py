@@ -46,3 +46,18 @@ def retrieve_payloads(payload_path):
 
     with open(payload_path, mode="r", encoding="utf-8") as fp:
         return fp.readlines()
+
+
+def parse_headers(headers) -> dict:
+    """Convert headers argument to dictionary."""
+
+    _headers = dict()
+
+    if headers:
+        for header in headers:
+            # Header should be string as "X-API-Key:3"
+            # NOTE: Not going to test input, assume it for now.
+            key, val = header.pop().replace(' ', '').split(':')
+            _headers[key] = val
+
+    return _headers
