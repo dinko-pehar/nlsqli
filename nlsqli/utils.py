@@ -58,7 +58,13 @@ class URLParserType:
 
 def parse_data(data: str) -> dict:
     """Convert data argument to dictionary."""
-    pass
+
+    _data = dict()
+
+    for k, v in parse_qs(data).items():
+        _data[k] = v.pop()
+
+    return _data
 
 
 def retrieve_payloads(payload_path: str) -> list[AnyStr]:

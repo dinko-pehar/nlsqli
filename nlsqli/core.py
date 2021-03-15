@@ -5,6 +5,7 @@ import copy
 import re
 import sys
 import time
+import base64
 
 import requests
 
@@ -31,7 +32,7 @@ def analyze_output(req, query_id):
     return False
 
 
-def send(session: requests.Session, query_string: dict, payload: str, *,
+def send(session: requests.Session, query_string: dict, data: dict, payload: str, *,
          method: str = '', url: str = '', timeout: int = 0):
     """Send prepared request with malicious payload."""
 
@@ -45,7 +46,7 @@ def send(session: requests.Session, query_string: dict, payload: str, *,
                               url=url,
                               timeout=timeout,
                               params=params,
-                              data={})
+                              data=data)
 
         console.print(f' [bold green](INFO)[/bold green] Injecting: {payload.rstrip()} into {key}')
         analyze_output(req, key)
@@ -64,19 +65,24 @@ def inject(args):
     cookies = args.get('cookies')
     auth = args.get('auth')
 
-    if data is None and len(query_string) == 0:
+    console.print(f"Received: {args.get('url')}")
+
+    if len(query_string):
+        console.print(f"Found [bold red]{len(query_string)}[/bold red] query string arguments.")
+    elif data:
+        console.print(f"Request [u cyan]Data[/u cyan] set to: {data}")
+    else:
         console.print(f"Found [bold red]{len(query_string)}[/bold red] query string"
                       f" arguments and form data is set to: {data}\nExiting...")
         sys.exit(1)
 
-    console.print(f"Received: {args.get('url')}")
-    console.print(f"Found [bold red]{len(query_string)}[/bold red] query string arguments.")
     console.print(f"Request [u cyan]Method[/u cyan] set to: {method}")
     console.print(f"Request [u cyan]Timeout[/u cyan] set to: {timeout}")
     console.print(f"Request [u cyan]Headers[/u cyan] set to: {headers}")
-    console.print(f"Request [u cyan]Data[/u cyan] set to: {headers}")
     console.print(f"Request [u cyan]Cookies[/u cyan] set to: {cookies}")
-    console.print(f"Request [u cyan]Auth[/u cyan] set to Basic: {auth}")
+    if auth:
+        console.print(f"Request [u cyan]Auth[/u cyan] set to Basic: "
+                      f"{base64.b64encode(auth.encode())}")
 
     time.sleep(1)
 
@@ -101,5 +107,5 @@ def inject(args):
             for payload in payloads:
 
                 # TODO: Add headers and data.
-                send(session, query_string, payload,
+                send(session, query_string, data, payload,
                      method=method, url=url, timeout=timeout)

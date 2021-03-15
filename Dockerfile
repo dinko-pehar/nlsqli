@@ -3,7 +3,6 @@ FROM python:3.9-alpine
 # Set environment variables
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONPATH "/usr/src"
 ENV TERM xterm
 RUN pip install requests rich
 WORKDIR /tmp
@@ -11,4 +10,3 @@ COPY . .
 # Install package as "executable"
 RUN pip install .
 ENTRYPOINT ["nlsqli"]
-

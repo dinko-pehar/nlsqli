@@ -33,7 +33,7 @@ request_args.add_argument('--timeout',
 request_args.add_argument('-H', '--header',
                           type=str,
                           nargs="*", action="append",
-                          help='Extra headers (e.g. -H "Connection: Keep-Alive") '
+                          help='Extra headers (e.g. -H "Connection: Keep-Alive"'
                                '-H "ETag: 737060cd8c284d8af7ad3082f209582d"')
 request_args.add_argument('--cookies',
                           type=SimpleCookie,
@@ -42,5 +42,5 @@ request_args.add_argument('-a', '--auth',
                           type=str,
                           help='Pass a username:password pair for Basic Auth.')
 request_args.add_argument('--data',
-                          type=parse_data, nargs=1,
+                          type=parse_data,
                           help='Form data (e.g. "id=4&Submit=Submit")')
