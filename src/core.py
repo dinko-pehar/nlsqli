@@ -1,21 +1,36 @@
 import copy
+import re
 import sys
+import time
 
 import requests
-from rich.progress import track
 
-from constants import PAYLOADS_PATH
+from constants import PAYLOADS_PATH, DBMS_ERRORS
 from utils import retrieve_payloads, console
 
 
-def analyze_output(req):
-    # TODO: Figure out how to analyze output?
-    if "MariaDB" in req.text:
-        return True
+def analyze_output(req, query_id):
+    """Search response for successful injection."""
 
+    # Search for standard errors defined by databases.
+    for db_name in DBMS_ERRORS.keys():
 
-def send(session, query_string, payload, *,
-         method='', url='', timeout=0, data=None):
+        for error_regex in DBMS_ERRORS.get(db_name):
+
+            # Case insensitive search on response.
+            if re.search(error_regex, req.text, re.I):
+                time.sleep(.01)
+                console.print(f" [bold red](WARNING)[/bold red] parameter"
+                              f" [u cyan]{query_id}[/u cyan]"
+                              f" appears to be error SQLi vulnerable ({db_name})")
+                return True
+
+    return False
+
+def send(session: requests.Session, query_string: dict, payload: str, *,
+         method: str = '', url: str = '', timeout: int = 0):
+    """Send prepared request with malicious payload."""
+
     # Copy by value (don't modify original query string).
     params = copy.deepcopy(query_string)
 
@@ -28,9 +43,8 @@ def send(session, query_string, payload, *,
                               params=params,
                               data={})
 
-        if analyze_output(req):
-            console.log(f"Parameter {key} seems to be SQLi vulnerable.")
-
+        if analyze_output(req, key):
+            console.print(f" ---> Payload: {payload}")
         params[key] = val  # Retain original value.
 
 
@@ -50,14 +64,16 @@ def main(args):
                       f" arguments and form data is set to: {data}\nExiting...")
         sys.exit(1)
 
-
     console.print(f"Received: {args.get('url')}")
     console.print(f"Found [bold red]{len(query_string)}[/bold red] query string arguments.")
+    console.print(f"Request [u cyan]Method[/u cyan] set to: {method}")
     console.print(f"Request [u cyan]Timeout[/u cyan] set to: {timeout}")
     console.print(f"Request [u cyan]Headers[/u cyan] set to: {headers}")
-    console.print(f"Request [u cyan]Method[/u cyan] set to: {method}")
+    console.print(f"Request [u cyan]Data[/u cyan] set to: {headers}")
     console.print(f"Request [u cyan]Cookies[/u cyan] set to: {cookies}")
     console.print(f"Request [u cyan]Auth[/u cyan] set to Basic: {auth}")
+
+    time.sleep(1)
 
     with requests.Session() as session:
 
@@ -67,14 +83,18 @@ def main(args):
         if auth:  # Should be basic auth e.g. username:password.
             session.auth = tuple(auth.split(':'))
 
-        if headers:
-            session.headers.update(headers)
+        # TODO: Fix headers casting to dictionary.
+        # if headers:
+        #     session.headers.update(headers)
 
         console.rule("Injecting ...")
 
+        # Load payloads and replace them with values from provided query string.
         for payload_path in PAYLOADS_PATH.rglob('*.txt'):
             payloads = retrieve_payloads(payload_path)
 
-            for payload in track(payloads, description=f"Injecting from {payload_path} payloads..."):
+            for payload in payloads:
+
+                # TODO: Add headers and data.
                 send(session, query_string, payload,
                      method=method, url=url, timeout=timeout)
