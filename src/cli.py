@@ -7,14 +7,13 @@ parser = argparse.ArgumentParser(description="Detect and exploit SQL injection f
                                  epilog=EPILOG,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
 
-# At least one parameter is required.
-target_args = parser.add_mutually_exclusive_group(required=True)
-target_args.add_argument('-u','--url',
-                         help='Target URL (e.g. "http://www.site.com/vuln.php?id=1")'
-                         )
-target_args.add_argument('-m','--multi',
-                         help='File for multi values'
-                         )
+# Required arguments.
+required_args = parser.add_argument_group(title="Required arguments:")
+required_args.add_argument('-u','--url',
+                           type=str, required=True,
+                           help='Target URL (e.g. "http://www.site.com/vuln.php?id=1")'
+                           )
+
 
 # Optional groups.
 
