@@ -1,6 +1,6 @@
 import unittest
 
-from cli import parser
+from nlsqli.cli import parser
 
 
 class ParserTest(unittest.TestCase):

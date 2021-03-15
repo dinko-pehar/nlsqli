@@ -4,15 +4,18 @@ The main entry point. Invoke as `nlsqli' or `python3 -m nlsqli'.
 """
 import sys
 
-from cli import parser
-from core import main
+from nlsqli.cli import parser
+from nlsqli.core import inject
 
 
-if __name__ == '__main__':
+def main():
     args = vars(parser.parse_args())
     try:
-        main(args)
+        inject(args)
     except KeyboardInterrupt:
         # Suppress CTRL + C traceback
         sys.exit(1)
 
+
+if __name__ == '__main__':
+    main()

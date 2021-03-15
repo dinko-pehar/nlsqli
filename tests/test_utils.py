@@ -1,6 +1,6 @@
 import unittest
 
-from utils import URLParserType
+from nlsqli.utils import URLParserType
 
 
 class UtilsTest(unittest.TestCase):

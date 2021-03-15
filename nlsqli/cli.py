@@ -4,8 +4,8 @@ Module for extending arguments provided from CLI.
 import argparse
 from http.cookies import SimpleCookie
 
-from utils import URLParserType, parse_data
-from constants import EPILOG
+from nlsqli.utils import URLParserType, parse_data
+from nlsqli.constants import EPILOG
 
 parser = argparse.ArgumentParser(description="Detect and exploit SQL injection flaws",
                                  epilog=EPILOG,

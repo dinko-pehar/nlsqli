@@ -1,3 +1,6 @@
+"""
+Core module; everything in here defines whole project workflow.
+"""
 import copy
 import re
 import sys
@@ -5,8 +8,8 @@ import time
 
 import requests
 
-from constants import PAYLOADS_PATH, DBMS_ERRORS
-from utils import retrieve_payloads, console
+from nlsqli.constants import PAYLOADS_PATH, DBMS_ERRORS
+from nlsqli.utils import retrieve_payloads, console
 
 
 def analyze_output(req, query_id):
@@ -48,7 +51,8 @@ def send(session: requests.Session, query_string: dict, payload: str, *,
         params[key] = val  # Retain original value.
 
 
-def main(args):
+def inject(args):
+    """Execute all sorts of injections."""
     console.rule("Running...", characters="=")
 
     url, query_string = args.get("url")
