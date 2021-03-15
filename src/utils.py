@@ -1,38 +1,48 @@
 from urllib.parse import urlparse, parse_qs
+from collections.abc import Iterator
 
 from rich.console import Console
 
 console = Console()
 
 
-class URLParser:
+class URLParserType:
+    """Type handler to split URL and query strings."""
 
-    def __init__(self, url):
-
+    def __init__(self, url: str):
         self.url = self.qs = url
 
     @property
-    def url(self):
+    def url(self) -> str:
+        """Retrieve URL stripped from Query arguments.
+
+        Returns:
+            str: URL without query arguments or fragments.
+        """
         return self._url
 
     @url.setter
-    def url(self, val):
-        # Although _replace method is called, it's recommended for changing
+    def url(self, val: str):
+        # Although _replace private method is called, it's recommended for changing
         # ParseResult class by documentation:
         # https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlparse
         self._url = urlparse(val, allow_fragments=False)._replace(query=None).geturl()
-        console.print()
 
     @property
-    def qs(self):
+    def qs(self) -> dict:
+        """Retrieve Query arguments.
+
+        Returns:
+            dict: Mappings of query argument name and their values.
+        """
         return self._qs
 
     @qs.setter
-    def qs(self, val):
+    def qs(self, val: str):
         _query = parse_qs(urlparse(val).query, keep_blank_values=False)
         self._qs = {k: v.pop() for k, v in _query.items()}
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[str, dict]:
         return iter([self.url, self.qs])
 
     def __str__(self) -> str:
