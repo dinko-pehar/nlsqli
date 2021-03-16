@@ -2,6 +2,10 @@
   Small SQL Injection CLI written in Python <img src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/python/python.png" alt="Python" width="16" height="16">
 </p>
 
+---
+
+[![asciicast](https://asciinema.org/a/rBGyb07vchT86Leo4skGhMJ8A.svg)](https://asciinema.org/a/rBGyb07vchT86Leo4skGhMJ8A)
+
 ## Installation
 
 ### Docker
@@ -120,16 +124,16 @@ Request Auth set to Basic: None
 
 Only tested on `dvwa`.
 
-Run in a detached mode:
+Run in a detached mode and same network:
 
 ```shell
-docker run -d -p 80:80 vulnerables/web-dvwa
+docker run -d -p 80:80 --name dvwa --net test_network vulnerables/web-dvwa
 ```
 
 set database and security to low and pass URL along with a cookie to check the output:
 
 ```shell
-nlsqli --url 'http://localhost.com/path/to?q=3' --cookie 'PHPSESSID=rj77s7nkq8plslmkg8l8e73d94; security=low'
+nlsqli --url 'http://dvwa/vulnerabilities/sqli/?id=2&Submit=Submit' --cookie 'PHPSESSID=rj77s7nkq8plslmkg8l8e73d94; security=low'
 ```
 
 ### Research:

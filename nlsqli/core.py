@@ -106,6 +106,6 @@ def inject(args):
 
             for payload in payloads:
 
-                # TODO: Add headers and data.
+                # TODO: Add headers.
                 send(session, query_string, data, payload,
                      method=method, url=url, timeout=timeout)
